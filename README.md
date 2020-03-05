@@ -1,4 +1,4 @@
-Generator Debug Tasks for VS Code
+Generate Debug Tasks for VS Code
 =================================
 This repo is intended to be added as a submodule any time it is desired to debug C modules inside VS Code.
 
