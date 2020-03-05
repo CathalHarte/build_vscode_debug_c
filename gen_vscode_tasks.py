@@ -9,7 +9,7 @@ import os
 path = os.getcwd()
 
 folder = path.split("/")
-if folder[-1] != "build_test":
+if folder[-1] != "build_debug":
     raise Exception("script is being run out-of-directory, which is not supported")
 
 target_path = path + "/../.vscode"
