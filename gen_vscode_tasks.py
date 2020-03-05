@@ -23,7 +23,7 @@ if not os.path.exists(target_path):
 
 
 modules = []
-with open('modules_list.txt', 'r') as modules_list:
+with open('../modules_list.txt', 'r') as modules_list:
     for _, module in enumerate(modules_list):
         # Remove newline
         module = module.split("\n")
