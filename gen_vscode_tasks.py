@@ -8,8 +8,12 @@ import os
 
 path = os.getcwd()
 
-folder = path.split("/")
-if folder[-1] != "build_debug":
+if os.name == "nt":
+    folder = path.split("\\")
+else: # linux - maybe mac works too, but I don't have a reason to care
+    folder = path.split("/")
+
+if folder[-1] != "build_vscode_debug_c" and folder[-1] != "build_debug":
     raise Exception("script is being run out-of-directory, which is not supported")
 
 target_path = path + "/../.vscode"
