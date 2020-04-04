@@ -5,6 +5,7 @@
 # are generated based on the modules listed in modules_list.
 
 import os
+import collections
 
 path = os.getcwd()
 
@@ -29,14 +30,27 @@ if not os.path.exists(target_path):
 modules = []
 with open('../modules_list.txt', 'r') as modules_list:
     for _, module in enumerate(modules_list):
-        # Remove newline
+# I made this named tuple to hold info I need for relative path generation - without realising I don't use relative paths here
+        module_tuple = collections.namedtuple("module_tuple", ["path", "module", "num_folders"])
+
         module = module.split("\n")
-        modules.append(module[0])
+        module_tuple.path = module[0]
+        interim = module[0].split("/")
+        print(module[0])
+        module_tuple.path = module[0]
+        module_tuple.module = interim[-1]
+        module_tuple.num_folders = len(interim)
+        modules.append(module_tuple)
 
-modules.sort()
+# from operator import attrgetter
+# from collections import namedtuple
 
-for module in modules:
-    print(module)
+# sorted(modules, key=attrgetter('path'))
+
+for m in modules:
+    print(m.path)
+    print(m.module)
+    print(m.num_folders)
 
 
 # start of launch.json
@@ -54,13 +68,13 @@ lines.append("    \"configurations\": [\n")
 for module in modules:
 
     lines.append("        {")
-    lines.append("            \"name\": \"launch: debug %s\",\n" % module)
+    lines.append("            \"name\": \"launch: debug %s\",\n" % module.path)
     lines.append("            \"type\": \"cppdbg\",\n")
     lines.append("            \"request\": \"launch\",\n")
-    lines.append("            \"program\": \"${workspaceFolder}/%s/build/%s\",\n" % (module, module))
+    lines.append("            \"program\": \"${workspaceFolder}/%s/build/%s\",\n" % (module.path, module.module))
     lines.append("            \"args\": [],\n")
     lines.append("            \"stopAtEntry\": false,\n")
-    lines.append("            \"cwd\": \"${workspaceFolder}/%s/build\",\n" % module)
+    lines.append("            \"cwd\": \"${workspaceFolder}/%s/build\",\n" % module.path)
     lines.append("            \"environment\": [],\n")
     lines.append("            \"externalConsole\": false,\n")
     lines.append("            \"MIMode\": \"gdb\",\n")
@@ -71,7 +85,7 @@ for module in modules:
     lines.append("                    \"ignoreFailures\": true\n")
     lines.append("                }\n")
     lines.append("            ],\n")
-    lines.append("            \"preLaunchTask\": \"build: %s\",\n" % module)
+    lines.append("            \"preLaunchTask\": \"build: %s\",\n" % module.path)
     lines.append("            \"miDebuggerPath\": \"/usr/bin/gdb\"\n")
     lines.append("        },\n")
 
@@ -101,11 +115,11 @@ lines.append("    \"tasks\": [\n")
 
 for module in modules:
     lines.append("        {")
-    lines.append("            \"label\": \"build: %s\",\n" % module)
+    lines.append("            \"label\": \"build: %s\",\n" % module.path)
     lines.append("            \"type\": \"shell\",\n")
     lines.append("            \"command\": \"mkdir -p build; cd build; cmake -DCMAKE_BUILD_TYPE=Debug ..; make\",\n")
     lines.append("            \"options\": {\n")
-    lines.append("                \"cwd\": \"${workspaceFolder}/%s\"\n" % module)
+    lines.append("                \"cwd\": \"${workspaceFolder}/%s\"\n" % module.path)
     lines.append("            },\n")
     lines.append("            \"problemMatcher\": {\n")
     lines.append("                \"base\": \"$gcc\",\n")
